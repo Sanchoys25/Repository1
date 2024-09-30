@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.content }}</p>
+    <p><small>Posted by {{ post.author.username }} on {{ post.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}</small></p>
+    
+    {% if current_user.is_authenticated %}
+        <h3>Leave a Comment</h3>
+        <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}">
+            <textarea name="content" required></textarea>
+            <button type="submit">Submit Comment</button>
+        </form>
+    {% endif %}
+
+    <h3>Comments</h3>
+    <ul>
+        {% for comment in post.comments %}
+            <li><strong>{{ comment.user.username }}</strong>: {{ comment.content }}</li>
+        {% endfor %}
+    </ul>
+
+    {% if current_user.is_authenticated and post.author.id == current_user.id %}
+        <div class="edit-delete">
+            <a href="{{ url_for('edit_post', post_id=post.id) }}">Edit Post</a>
+            <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" style="display:inline;">
+                <button type="submit">Delete Post</button>
+            </form>
+        </div>
+    {% endif %}
+    
+    <a href="{{ url_for('home') }}">Back to home</a>
+{% endblock %}

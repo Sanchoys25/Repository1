@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+
+{% block content %}
+    <h1>{{ user.username }}'s Profile</h1>
+    <h2>Your Posts</h2>
+    <ul>
+        {% for post in user.posts %}
+            <li><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <h2>Subscriptions</h2>
+    <ul>
+        {% for subscription in user.subscriptions %}
+            <li>{{ subscription.username }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Followers</h2>
+    <ul>
+        {% for follower in user.followers %}
+            <li>{{ follower.username }}</li>
+        {% endfor %}
+    </ul>
+
+    {% if current_user.is_authenticated %}
+        {% if user in current_user.subscriptions %}
+            <form action="{{ url_for('unsubscribe', user_id=user.id) }}" method="POST">
+                <button type="submit">Unsubscribe</button>
+            </form>
+        {% else %}
+            <form action="{{ url_for('subscribe', user_id=user.id) }}" method="POST">
+                <button type="submit">Subscribe</button>
+            </form>
+        {% endif %}
+    {% endif %}
+    
+    <a href="{{ url_for('create_post') }}">Create a New Post</a>
+{% endblock %}
